@@ -150,7 +150,6 @@ print("Total possible edges : ", num_nodes*(num_nodes-1)/2) # Total possible edg
 # Create Barabási-Albert graph with networkx library
 m = avg_degree // 2 # The reason of dividing by 2 is that the Barabási-Albert model, each edge contributes to the degree of two nodes.
 BA_graph = nx.barabasi_albert_graph(num_nodes, m)
-     
 diameter_manual_BA = math.log2(num_nodes) / math.log2(math.log2(num_nodes)) # The diameter of the Barabási-Albert graph is approximately log2(N) / log2(log2(N))    
 coefficent_manual_BA = 1 / (num_nodes**0.75) # The clustering coefficient of the Barabási-Albert graph is approximately 1 / N^0.75
 print("manual_diameter: {}".format(diameter_manual_BA))
@@ -163,7 +162,7 @@ pagerank_values = calculate_pagerank(ER_graph=ER_graph, BA_graph= BA_graph)
 # (OPTIONAL) Calculate and Analyze Poission Distribution for Erdos-Renyi Model
 degree_sequence = [d for n, d in ER_graph.degree()]
 poisson_dist = poisson(avg_degree)
-poisson_list = [poisson_dist.pmf(k) for k in range(max(degree_sequence) + 1)]
+poisson_list = [poisson_dist.pmf(k) for k in range(max(degree_sequence) + 1)] # Calculate the Poisson distribution for the degrees in the Erdos-Renyi model. It helps us to explain more clearly the random distribution of node degrees in the Erdős-Rényi graph.
 
 
 # Visaualize the graphs and PageRank values
