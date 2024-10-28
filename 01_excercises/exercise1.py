@@ -7,6 +7,7 @@
 
 
 import networkx as nx
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Dict, Tuple
@@ -15,6 +16,10 @@ from typing import Dict, Tuple
 def draw_graph(
     pagerank_er: nx.Graph,
     pagerank_ba: nx.Graph,     
+    diameter_manual_BA: float,
+    diameter_manual_ER: float,
+    coefficent_manual_BA: float,
+    coefficent_manual_ER: float,
     pos_er: Dict[int, Tuple[float, float]], 
     pos_ba: Dict[int, Tuple[float, float]]) -> None:
 
@@ -73,22 +78,36 @@ def draw_graph(
     plt.show()
 
     # Additional plot for comparing means and variances of PageRank distributions
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(8, 8))
 
     # Plot Erdős-Rényi Variance and Barabási-Albert Variance
-    ax1.bar(["Erdős-Rényi Variance"], [var_er], color='skyblue', label="Erdős-Rényi Variance")
-    ax1.bar(["Barabási-Albert Variance"], [var_ba], color='orange', label="Barabási-Albert Variance")
+    ax1.bar(["Erdős-Rényi Variance"], [var_er], color='skyblue', label="Erdős-Rényi Variance", width=0.1)
+    ax1.bar(["Barabási-Albert Variance"], [var_ba], color='orange', label="Barabási-Albert Variance", width=0.1)
     ax1.set_title("Comparison of Variance for PageRank Distributions")
     ax1.set_ylabel("Value")
     ax1.legend()
 
     # Plot Erdős-Rényi Mean and Barabási-Albert Mean  
-    ax2.bar(["Erdős-Rényi Mean"], [mean_er], color='skyblue', label="Erdős-Rényi Mean")
-    ax2.bar(["Barabási-Albert Mean"], [mean_ba], color='orange', label="Barabási-Albert Mean")
+    ax2.bar(["Erdős-Rényi Mean"], [mean_er], color='skyblue', label="Erdős-Rényi Mean", width=0.1)
+    ax2.bar(["Barabási-Albert Mean"], [mean_ba], color='orange', label="Barabási-Albert Mean", width=0.1)
     ax2.set_title("Comparison of Mean for PageRank Distributions")
     ax2.set_ylabel("Value")
     ax2.legend()
 
+    # Plot Erdős-Rényi Mean and Barabási-Albert Diameter 
+    ax3.bar(["Erdős-Rényi Diameter"], [diameter_manual_ER], color='skyblue', label="Erdős-Rényi Diameter", width=0.1)
+    ax3.bar(["Barabási-Albert Diameter"], [diameter_manual_BA], color='orange', label="Barabási-Albert Diameter", width=0.1)
+    ax3.set_title("Comparison of Diameters")
+    ax3.set_ylabel("Value")
+    ax3.legend()
+
+
+    # Plot Erdős-Rényi Mean and Barabási-Albert Cluster coefficient
+    ax4.bar(["Erdős-Rényi Coefficient"], [coefficent_manual_ER], color='skyblue', label="Erdős-Rényi Coefficient", width=0.1)
+    ax4.bar(["Barabási-Albert Coefficient"], [coefficent_manual_BA], color='orange', label="Barabási-Albert Coefficient", width=0.1)
+    ax4.set_title("Comparison of Coefficients")
+    ax4.set_ylabel("Value")
+    ax4.legend()
     plt.tight_layout()
     plt.show()
     return 0
@@ -114,15 +133,30 @@ avg_degree = 3  # Average degree
 p = avg_degree / (num_nodes - 1) #The equation for the expected value in a binomial distribution is E(X) = np, so N-1 is the possible number of the nodes except for one node itself.
 ER_graph = nx.erdos_renyi_graph(num_nodes, p)
 pos_er = nx.spring_layout(ER_graph)
+ 
+diameter_manual_ER = math.log2(num_nodes) # The diameter of the Erdős-Rényi graph is approximately log2(N)
+coefficent_manual_ER = 1 / num_nodes # The clustering coefficient of the Erdős-Rényi graph is approximately 1 / N
+print("manual_diameter: {}".format(diameter_manual_ER))
+print("manual_coefficient: {}".format(coefficent_manual_ER))
 print("Total possible edges : ", num_nodes*(num_nodes-1)/2) # Total possible edges in the graph, N*(N-1))/2
+
 # Create Barabási-Albert graph with networkx library
 m = avg_degree // 2 # The reason of dividing by 2 is that the Barabási-Albert model, each edge contributes to the degree of two nodes.
 BA_graph = nx.barabasi_albert_graph(num_nodes, m)
-
+     
+diameter_manual_BA = math.log2(num_nodes) / math.log2(math.log2(num_nodes)) # The diameter of the Barabási-Albert graph is approximately log2(N) / log2(log2(N))    
+coefficent_manual_BA = 1 / (num_nodes**0.75) # The clustering coefficient of the Barabási-Albert graph is approximately 1 / N^0.75
+print("manual_diameter: {}".format(diameter_manual_BA))
+print("manual_coefficient: {}".format(coefficent_manual_BA))
 # Calculate the position of nodes in the graph
 pos_ba = nx.spring_layout(BA_graph)
 
 # Calculate PageRank
 pagerank_values = calculate_pagerank(ER_graph=ER_graph, BA_graph= BA_graph)
 # Visaualize the graphs and PageRank values
-draw_graph(pagerank_er= pagerank_values[0], pagerank_ba= pagerank_values[1], pos_er= pos_er, pos_ba= pos_ba)
+draw_graph(pagerank_er= pagerank_values[0], pagerank_ba= pagerank_values[1], 
+           diameter_manual_BA= diameter_manual_BA,
+           diameter_manual_ER= diameter_manual_ER,
+           coefficent_manual_BA = coefficent_manual_BA,
+           coefficent_manual_ER = coefficent_manual_ER, 
+           pos_er= pos_er, pos_ba= pos_ba)
