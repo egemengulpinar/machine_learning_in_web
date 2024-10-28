@@ -10,8 +10,8 @@ import networkx as nx
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Dict, Tuple
-
+from typing import Dict, Tuple, List
+from scipy.stats import poisson
 
 def draw_graph(
     pagerank_er: nx.Graph,
@@ -21,7 +21,8 @@ def draw_graph(
     coefficent_manual_BA: float,
     coefficent_manual_ER: float,
     pos_er: Dict[int, Tuple[float, float]], 
-    pos_ba: Dict[int, Tuple[float, float]]) -> None:
+    pos_ba: Dict[int, Tuple[float, float]],
+    poisson_list: List) -> None:
 
     # Set up the figure for visualizing graphs
     plt.figure(figsize=(30, 15))
@@ -77,6 +78,12 @@ def draw_graph(
     plt.tight_layout()
     plt.show()
 
+    plt.bar(range(len(poisson_list)), poisson_list, color='skyblue', alpha=0.9)
+    plt.xlabel('Degree')
+    plt.ylabel('Probability')
+    plt.title('Poisson Distribution for Degrees in Erdős-Rényi Model')
+    plt.show()
+
     # Additional plot for comparing means and variances of PageRank distributions
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(8, 8))
 
@@ -126,7 +133,7 @@ def calculate_pagerank(
 
 # Parameters
 num_nodes = 100  # Number of nodes
-avg_degree = 3  # Average degree
+avg_degree = 10  # Average degree
 
 # Create Erdős-Rényi graph
 # p = probablity of the edge between two nodes
@@ -153,10 +160,17 @@ pos_ba = nx.spring_layout(BA_graph)
 
 # Calculate PageRank
 pagerank_values = calculate_pagerank(ER_graph=ER_graph, BA_graph= BA_graph)
+# (OPTIONAL) Calculate and Analyze Poission Distribution for Erdos-Renyi Model
+degree_sequence = [d for n, d in ER_graph.degree()]
+poisson_dist = poisson(avg_degree)
+poisson_list = [poisson_dist.pmf(k) for k in range(max(degree_sequence) + 1)]
+
+
 # Visaualize the graphs and PageRank values
 draw_graph(pagerank_er= pagerank_values[0], pagerank_ba= pagerank_values[1], 
            diameter_manual_BA= diameter_manual_BA,
            diameter_manual_ER= diameter_manual_ER,
            coefficent_manual_BA = coefficent_manual_BA,
            coefficent_manual_ER = coefficent_manual_ER, 
-           pos_er= pos_er, pos_ba= pos_ba)
+           pos_er= pos_er, pos_ba= pos_ba,
+           poisson_list = poisson_list)
