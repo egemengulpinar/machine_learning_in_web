@@ -39,9 +39,9 @@ def draw_time_series(t: np.ndarray, series: list, xlabel: str, ylabel:str, title
     plt.figure(figsize=(12, 8))
     for f, mean, std, title, color in series:
         plt.plot(t, f, label=f"{title} (Mean: {mean:.2f}, Std Dev: {std:.2f})", color=color, alpha=0.7)
-    plt.xlabel("Time (t)")
-    plt.ylabel("Function value")
-    plt.title("Generated Time Series with Statistical Summary")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
     plt.legend()
     plt.grid(True)
     plt.show()
