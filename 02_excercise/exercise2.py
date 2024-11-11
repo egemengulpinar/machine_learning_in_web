@@ -37,8 +37,10 @@ def draw_time_series(t: np.ndarray, series: list, xlabel: str, ylabel:str, title
     series: list of tuples containing (time series, mean, std, title, color)
     """
     plt.figure(figsize=(12, 8))
-    for f, mean, std, title, color in series:
-        plt.plot(t, f, label=f"{title} (Mean: {mean:.2f}, Std Dev: {std:.2f})", color=color, alpha=0.7)
+    
+    for s, mean, std, label, color in series:
+        plt.plot(t, s, label=label, color=color)
+        plt.fill_between(t, mean - std, mean + std, color=color, alpha=0.08)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
