@@ -46,7 +46,9 @@ similarity2 = rbf_kernel(X2_scaled, gamma=1.0)#kernel(X2_scaled, gamma=1.0) #rbf
                                                #gamma : sensitive parameter for similarity calculation. 
 
 n_clusters = 10
-damping = 0.9
+damping = 0.9 #it helps to prevent numerical oscillations, algorithm divergence(higher changes) in the similarity matrix. It is used in Affinity Propagation method.
+#lower damping values are faster to converge but sensitive to noise.
+#higer damping values are more stable but slower to converge.
 
 
 def apply_clustering(X, similarity_matrix):
@@ -87,9 +89,6 @@ def evaluate_clustering(X, labels):
     silhouette = silhouette_score(X, labels)
     davies_bouldin = davies_bouldin_score(X, labels)
     return silhouette, davies_bouldin
-
-
-
 
 
 results_data = []
