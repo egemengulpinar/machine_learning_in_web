@@ -14,7 +14,7 @@ from sklearn.metrics import silhouette_score, davies_bouldin_score
 from sklearn.metrics.pairwise import kernel_metrics, rbf_kernel
 
 
-def create_circular_data(n_samples=300):
+def create_circular_data(n_samples=400):
     
     X, y = make_blobs(n_samples=n_samples, #randomly generate data points to distribute in clusters
                       centers=10,
@@ -36,17 +36,17 @@ X1, y1 = create_circular_data()
 X2, y2 = create_checkerboard()
 
 
-scaler = StandardScaler() #normalization of the features of data. This is required for clustering algorithms.(K-Means, Affinity Propagation, Spectral Clustering)
+scaler = StandardScaler() #normalization of the features of data.
 X1_scaled = scaler.fit_transform(X1)
 X2_scaled = scaler.fit_transform(X2)
 
 
-similarity1 = rbf_kernel(X1_scaled, gamma=1.0)#kernel(X1_scaled, gamma=1.0) #creates similarity matrix with radial basis function kernel for Spectral Clustering method
-similarity2 = rbf_kernel(X2_scaled, gamma=1.0)#kernel(X2_scaled, gamma=1.0) #rbf assign a score to each pair of data points, which is used to determine the similarity between them.
+similarity1 = rbf_kernel(X1_scaled, gamma=1.0) #creates similarity matrix with radial basis function kernel for Spectral Clustering method
+similarity2 = rbf_kernel(X2_scaled, gamma=1.0) #rbf assign a score to each pair of data points, which is used to determine the similarity between them.
                                                #gamma : sensitive parameter for similarity calculation. 
 
 n_clusters = 10
-damping = 0.9 #it helps to prevent numerical oscillations, algorithm divergence(higher changes) in the similarity matrix. It is used in Affinity Propagation method.
+damping = 0.9 #for stability, it helps to prevent numerical oscillations, algorithm divergence(higher changes) in the similarity matrix. It is used in Affinity Propagation method.
 #lower damping values are faster to converge but sensitive to noise.
 #higer damping values are more stable but slower to converge.
 
@@ -58,7 +58,7 @@ def apply_clustering(X, similarity_matrix):
     
     # Affinity Propagation
     af = AffinityPropagation(damping=damping, random_state=42) #in brief, depending on the similarity of the data, it assign cluster centers automatically.
-    af_labels = af.fit_predict(X)
+    af_labels = af.fit_predict(X) #handle transformations internally
     
     # Spectral Clustering
     spectral = SpectralClustering(n_clusters=n_clusters,  #in brief, it uses the eigenvalues of a similarity matrix to reduce the dimensionality of the data before clustering in a lower dimensional space.
@@ -111,7 +111,7 @@ for X, similarity, name in [(X1_scaled, similarity1, 'Circular Dataset'),
                 'Dataset': name,
                 'Method': method,
                 'Silhouette Score': f"{scores[0]:.3f}", # calculates quality of clustering, higher is better
-                'Davies-Bouldin Score': f"{scores[1]:.3f}" # calculates distance between clusters, lower is better
+                'Davies-Bouldin Score': f"{scores[1]:.3f}" # calculates distance between clusters, lower is better, checks simişlarity between clusters
             })
 
 
