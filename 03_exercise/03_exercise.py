@@ -1,3 +1,9 @@
+########## Machine Learning In Web - Exercise 3, Practical(b) ##########
+## Author : Hakki Egemen Gülpinar
+## Date: 28.11.2024
+## Subject: Clustering
+#########################################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
